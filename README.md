@@ -23,7 +23,7 @@ one, so `verify.sh` always has a meaningful green.
 
 | Demo | Post | One-liner |
 |---|---|---|
-| _(first demo lands with the first post)_ | | |
+| [reply-to-approve](reply-to-approve/) | [A human approval gate that isn't a dashboard](https://tdesmedt-tdsgn.github.io/2026/09/14/reply-to-approve.html) | An agent that blocks until a human replies with a recognised instruction, and refuses to guess when the reply doesn't parse. |
 
 ## Why this exists
 
