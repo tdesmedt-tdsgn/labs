@@ -1,0 +1,43 @@
+name: verify
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run verify.sh in changed demos
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            base="${{ github.event.pull_request.base.sha }}"
+          else
+            base="${{ github.event.before }}"
+          fi
+          if git cat-file -e "$base" 2>/dev/null; then
+            dirs=$(git diff --name-only "$base"...HEAD | awk -F/ 'NF>1 {print $1}' | sort -u)
+          else
+            # base unknown (first push / force push): verify everything
+            dirs=$(find . -maxdepth 2 -name verify.sh -not -path './.git/*' | xargs -rn1 dirname | sed 's|^\./||' | sort -u)
+          fi
+          rc=0; ran=0
+          for d in $dirs; do
+            [ -f "$d/verify.sh" ] || continue
+            ran=1
+            echo "::group::verify $d"
+            (cd "$d" && bash verify.sh) || { echo "FAIL: $d"; rc=1; }
+            echo "::endgroup::"
+          done
+          [ "$ran" = 1 ] || echo "no demos changed"
+          exit $rc
