@@ -1,0 +1,8 @@
+warehouse:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      # A file on disk, so the assistant can open the same warehouse dbt built.
+      path: "{{ env_var('DBT_WAREHOUSE_DB', 'target/warehouse.duckdb') }}"
+      threads: 4

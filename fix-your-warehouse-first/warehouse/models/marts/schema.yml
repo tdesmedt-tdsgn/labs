@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: dim_customers
+    description: One row per customer.
+    columns:
+      - name: customer_id
+        description: The grain. If this is not unique, every join to it fans out.
+        data_tests:
+          - unique
+          - not_null
+
+  - name: fct_revenue
+    description: One row per completed order.
+    columns:
+      - name: order_id
+        description: The grain. Duplicates here mean revenue is being counted twice.
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dim_customers')
+              field: customer_id
+      - name: region
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: [north, south, east, west]

@@ -1,0 +1,19 @@
+name: warehouse
+version: "1.0.0"
+profile: warehouse
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+
+vars:
+  # "broken" keeps every historical CRM row in the customer dimension,
+  # "fixed" keeps only the current one. Nothing else differs.
+  scenario: fixed
+
+models:
+  warehouse:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table
